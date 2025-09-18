@@ -1,0 +1,12 @@
+package rules;
+
+import com.example.sbnz.model.Country;
+
+dialect "mvel";
+
+rule "temp"
+    when
+        $country: Country(regionIme == "Balkan")
+    then
+        System.out.println(1);
+end;

@@ -2,6 +2,8 @@ package com.example.sbnz.controllers;
 
 import com.example.sbnz.DTO.RequestDTO;
 import com.example.sbnz.DTO.ResponseDTO;
+import com.example.sbnz.service.RulesService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/")
 public class RulesController
 {
+    @Autowired
+    private RulesService rulesService;
+
     @GetMapping("rules")
     public ResponseEntity<?> aplyRules(@RequestBody RequestDTO requestDTO)
     {
-        return new ResponseEntity<ResponseDTO>(new ResponseDTO("a", "b", "c", "d", "e", 5, 4, 3, 2, 1), HttpStatus.OK);
+        ResponseDTO response = rulesService.applyRules(requestDTO);
+        return new ResponseEntity<ResponseDTO>(response, HttpStatus.OK);
     }
 }
