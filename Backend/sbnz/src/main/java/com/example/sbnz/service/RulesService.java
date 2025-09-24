@@ -9,6 +9,7 @@ import com.example.sbnz.model.Region;
 import com.example.sbnz.model.SnagaDrzave;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,13 +17,13 @@ import java.util.ArrayList;
 @Service
 public class RulesService
 {
-    //private final KieContainer kieContainer;
+    private final KieContainer kieContainer;
     private ArrayList<Region> regions;
     private ArrayList<Country> countries;
 
-    public RulesService()//KieContainer kieContainer)
+    public RulesService(KieContainer kieContainer)
     {
-        //this.kieContainer = kieContainer;
+        this.kieContainer = kieContainer;
 
         regions = new ArrayList<Region>();
         regions.add(new Region("Balkan", Kontinent.EVROPA_I_SREDOZEMLJE));
@@ -49,9 +50,10 @@ public class RulesService
 
     public ResponseDTO applyRules(RequestDTO request)
     {
-        /*KieSession kieSession = kieContainer.newKieSession();
+        KieSession kieSession = kieContainer.newKieSession();
+        kieSession.insert(countries.get(0));
         kieSession.fireAllRules();
-        kieSession.dispose();*/
+        kieSession.dispose();
 
         return new ResponseDTO("a", "b", "c", "d", "e", 5, 4, 3, 2, 1);
     }
