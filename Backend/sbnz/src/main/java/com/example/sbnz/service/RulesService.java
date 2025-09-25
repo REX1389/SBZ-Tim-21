@@ -9,10 +9,11 @@ import com.example.sbnz.model.Region;
 import com.example.sbnz.model.SnagaDrzave;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.kie.api.runtime.rule.FactHandle;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class RulesService
@@ -50,11 +51,24 @@ public class RulesService
 
     public ResponseDTO applyRules(RequestDTO request)
     {
-        KieSession kieSession = kieContainer.newKieSession();
-        kieSession.insert(countries.get(0));
-        kieSession.fireAllRules();
-        kieSession.dispose();
+        ResponseDTO response = new ResponseDTO();
+        Score score = new Score();
+        List<Integer> scoreList = new ArrayList<Integer>();
 
-        return new ResponseDTO("a", "b", "c", "d", "e", 5, 4, 3, 2, 1);
+        for(Country country: countries)
+        {
+            KieSession kieSession = kieContainer.newKieSession();
+
+            kieSession.insert(score);
+            kieSession.insert(scoreList);
+            kieSession.insert(country);
+
+            kieSession.fireAllRules();
+            kieSession.dispose();
+
+            response.insert(country.ime, score.score);
+        }
+
+        return response;
     }
 }

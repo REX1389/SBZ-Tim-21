@@ -1,12 +1,32 @@
 package rules;
 
-import com.example.sbnz.model.Country;
+import com.example.sbnz.model.Country
+import com.example.sbnz.service.Score
+import java.util.ArrayList
+import java.util.List
 
-dialect "mvel";
+dialect "java";
 
-rule "temp"
+rule "setup"
+    salience 10
     when
-        $country: Country(regionIme == "Balkan")
+        $s: Score()
+        $scoreList: List()
     then
-        System.out.println(1);
+        $scoreList = new ArrayList<Integer>();
+        $scoreList.add(0);
+        modify($s){setScore(0)};
+end;
+
+rule "sccumulate"
+    salience 5
+    when
+        $s: Score()
+        $scoreList: List()
+        $score: Integer() from accumulate (
+                       $value: Integer() from $scoreList,
+                       sum( $value )
+                   )
+    then
+        modify($s){setScore($score)}
 end;
