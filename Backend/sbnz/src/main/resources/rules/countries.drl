@@ -1,11 +1,21 @@
 package rules;
 
 import com.example.sbnz.model.Country
+import com.example.sbnz.model.Region
+import com.example.sbnz.model.Grana
+import com.example.sbnz.DTO.RequestDTO
+import com.example.sbnz.DTO.StilIgre
 import com.example.sbnz.service.Score
 import java.util.ArrayList
 import java.util.List
 
 dialect "java";
+
+query jeUzvodno( String x, String y )
+Grana( x, y; )
+or
+( Grana( z, y; ) and jeUzvodno( x, z; ) )
+end
 
 rule "setup"
     salience 10
@@ -13,9 +23,30 @@ rule "setup"
         $s: Score()
         $scoreList: List()
     then
-        $scoreList = new ArrayList<Integer>();
-        $scoreList.add(0);
         modify($s){setScore(0)};
+        $scoreList.add(0);
+end;
+
+rule "trade1"
+    salience 7
+    when
+        $r: RequestDTO(stilIgre == StilIgre.TRGOVINA)
+        $scoreList: List()
+        $c: Country()
+        $region: Region(ime == $c.regionIme)
+    then
+        $scoreList.add($region.vrednost);
+end;
+
+rule "trade2"
+    salience 7
+    when
+        $r: RequestDTO(stilIgre == StilIgre.TRGOVINA)
+        $scoreList: List()
+        $c: Country()
+        $region: Region(jeUzvodno(ime, $c.regionIme))
+    then
+        $scoreList.add($region.vrednost);
 end;
 
 rule "sccumulate"

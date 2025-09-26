@@ -13,6 +13,7 @@ public class Region
     @Id
     @Column(nullable = false, updatable = false, unique = true)
     public String ime;
+    public int vrednost;
     public Kontinent kontinent;
 
     public Region()
@@ -20,9 +21,10 @@ public class Region
         ime = "Jugoslavija";
         kontinent = Kontinent.EVROPA_I_SREDOZEMLJE;
     }
-    public Region(String i, Kontinent k)
+    public Region(String i, int v, Kontinent k)
     {
         ime = i;
+        vrednost = v;
         kontinent = k;
     }
 }
