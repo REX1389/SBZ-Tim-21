@@ -9,12 +9,16 @@ import com.example.sbnz.service.Score
 import java.util.ArrayList
 import java.util.List
 
-dialect "java";
-
 query jeUzvodno( String x, String y )
 Grana( x, y; )
+//or
+//( Grana( z, y; ) and jeUzvodno( x, z; ) )
+end
+
+query jeSusedno( String x, String y )
+Grana( x, y; )
 or
-( Grana( z, y; ) and jeUzvodno( x, z; ) )
+Grana( y, x; )
 end
 
 rule "setup"
@@ -27,24 +31,15 @@ rule "setup"
         $scoreList.add(0);
 end;
 
-rule "trade1"
+rule "trade"
     salience 7
     when
         $r: RequestDTO(stilIgre == StilIgre.TRGOVINA)
         $scoreList: List()
         $c: Country()
         $region: Region(ime == $c.regionIme)
-    then
-        $scoreList.add($region.vrednost);
-end;
-
-rule "trade2"
-    salience 7
-    when
-        $r: RequestDTO(stilIgre == StilIgre.TRGOVINA)
-        $scoreList: List()
-        $c: Country()
-        $region: Region(jeUzvodno(ime, $c.regionIme))
+        //or
+        //$region: Region($ime: ime) from jeUzvodno($ime, $c.regionIme)
     then
         $scoreList.add($region.vrednost);
 end;
