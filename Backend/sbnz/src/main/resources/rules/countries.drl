@@ -3,9 +3,15 @@ package rules;
 import com.example.sbnz.model.Country
 import com.example.sbnz.model.Region
 import com.example.sbnz.model.Grana
+import com.example.sbnz.model.SnagaDrzave
 import com.example.sbnz.DTO.RequestDTO
 import com.example.sbnz.DTO.StilIgre
+import com.example.sbnz.DTO.Kontinent
+import com.example.sbnz.DTO.Tezina
+import com.example.sbnz.DTO.StabloMisija
+import com.example.sbnz.DTO.Dostignuca
 import com.example.sbnz.service.Score
+import com.example.sbnz.service.RotU
 import java.util.ArrayList
 import java.util.List
 
@@ -25,26 +31,299 @@ rule "setup"
     salience 10
     when
         $s: Score()
+        $rotu: RotU()
         $scoreList: List()
     then
         modify($s){setScore(0)};
         $scoreList.add(0);
 end;
 
-rule "trade"
+rule "osvajanje1"
+    salience 7
+    when
+        $r: RequestDTO(stilIgre == StilIgre.OSVAJANJE)
+        $scoreList: List()
+        $c: Country()
+        $region: Region(ime == $c.regionIme)
+    then
+        $scoreList.add($region.vrednost);
+end;
+
+/*rule "osvajanje2"
+    salience 7
+    when
+        $r: RequestDTO(stilIgre == StilIgre.OSVAJANJE)
+        $scoreList: List()
+        $c: Country()
+        $region: Region()
+        jeSusedno($region.ime, $c.regionIme)
+    then
+        $scoreList.add($region.vrednost);
+end;*/
+
+rule "diplomatija1"
+    salience 8
+    when
+        $r: RequestDTO(stilIgre == StilIgre.DIPLOMATIJA)
+        $rotu: RotU()
+    then
+        modify($rotu){D1 = true};
+end;
+
+rule "diplomatija2"
+    salience 8
+    when
+        $c: Country(diplomatska_institucija == true)
+        $rotu: RotU()
+    then
+        modify($rotu){D2 = true};
+end;
+
+rule "diplomatija"
+    salience 7
+    when
+        $rotu: RotU(D1 == true && D2 == true)
+        $scoreList: List()
+        $c: Country()
+        $region: Region(ime == $c.regionIme)
+    then
+        $scoreList.add($region.vrednost * 4);
+end;
+
+rule "trgovina1"
     salience 7
     when
         $r: RequestDTO(stilIgre == StilIgre.TRGOVINA)
         $scoreList: List()
         $c: Country()
         $region: Region(ime == $c.regionIme)
-        //or
-        //$region: Region($ime: ime) from jeUzvodno($ime, $c.regionIme)
     then
         $scoreList.add($region.vrednost);
 end;
 
-rule "sccumulate"
+/*rule "trgovina2"
+    salience 7
+    when
+        $r: RequestDTO(stilIgre == StilIgre.TRGOVINA)
+        $scoreList: List()
+        $c: Country()
+        $region: Region()
+        jeUzvodno($region.ime, $c.regionIme)
+    then
+        $scoreList.add($region.vrednost);
+end;*/
+
+rule "kolonizacija1"
+    salience 8
+    when
+        $r: RequestDTO(stilIgre == StilIgre.KOLONIZACIJA)
+        $rotu: RotU()
+    then
+        modify($rotu){K1 = true};
+end;
+
+rule "kolonizacija2"
+    salience 8
+    when
+        $c: Country()
+        $r: Region(ime == $c.regionIme && kontinent != Kontinent.NOVI_SVET)
+        $rotu: RotU()
+    then
+        modify($rotu){K2 = true};
+end;
+
+rule "kolonizacija"
+    salience 7
+    when
+        $rotu: RotU(K1 == true && K2 == true)
+        $scoreList: List()
+    then
+        $scoreList.add(700);
+end;
+
+rule "kontinent"
+    salience 7
+    when
+        $scoreList: List()
+        $c: Country()
+        $region: Region(ime == $c.regionIme)
+        $request: RequestDTO(kontinent == $region.kontinent)
+    then
+        $scoreList.add(500);
+end;
+
+rule "S1"
+    salience 8
+    when
+        $rotu: RotU()
+        $c: Country(snagaDrzave == SnagaDrzave.JAKA)
+    then
+        modify($rotu){S1 = true};
+end;
+
+rule "S2"
+    salience 8
+    when
+        $rotu: RotU()
+        $c: Country(snagaDrzave == SnagaDrzave.OSREDNJA)
+    then
+        modify($rotu){S2 = true};
+end;
+
+rule "S3"
+    salience 8
+    when
+        $rotu: RotU()
+        $c: Country(snagaDrzave == SnagaDrzave.SLABA)
+    then
+        modify($rotu){S3 = true};
+end;
+
+rule "S4"
+    salience 8
+    when
+        $rotu: RotU()
+        $c: Country(snagaDrzave == SnagaDrzave.ZANEMARLJIVA)
+    then
+        modify($rotu){S4 = true};
+end;
+
+rule "T1"
+    salience 8
+    when
+        $rotu: RotU()
+        $request: RequestDTO(tezina == Tezina.POCETNIK)
+    then
+        modify($rotu){T1 = true};
+end;
+
+rule "T2"
+    salience 8
+    when
+        $rotu: RotU()
+        $request: RequestDTO(tezina == Tezina.OSREDNJI)
+    then
+        modify($rotu){T2 = true};
+end;
+
+rule "T3"
+    salience 8
+    when
+        $rotu: RotU()
+        $request: RequestDTO(tezina == Tezina.ISKUSNI)
+    then
+        modify($rotu){T3 = true};
+end;
+
+rule "T4"
+    salience 8
+    when
+        $rotu: RotU()
+        $request: RequestDTO(tezina == Tezina.STRUCNJAK)
+    then
+        modify($rotu){T4 = true};
+end;
+
+rule "tezina1"
+    salience 7
+    when
+        $scoreList: List()
+        $rotu: RotU((S1 == true && T1 == true) || (S2 == true && T2 == true) || (S3 == true && T3 == true) || (S4 == true && T4 == true))
+    then
+        $scoreList.add(200);
+end;
+
+rule "tezina2"
+    salience 7
+    when
+        $scoreList: List()
+        $rotu: RotU((S2 == true && T1 == true) || (S3 == true && T2 == true) || (S4 == true && T3 == true))
+    then
+        $scoreList.add(100);
+end;
+
+rule "Zh1"
+    salience 8
+    when
+        $rotu: RotU()
+        $request: RequestDTO(stabloMisija == StabloMisija.NEBITNO)
+    then
+        modify($rotu){Zh1 = true};
+end;
+
+rule "Zh2"
+    salience 8
+    when
+        $rotu: RotU()
+        $request: RequestDTO(stabloMisija == StabloMisija.GRUPNO)
+    then
+        modify($rotu){Zh2 = true};
+end;
+
+rule "Zh3"
+    salience 8
+    when
+        $rotu: RotU()
+        $request: RequestDTO(stabloMisija == StabloMisija.JEDINSTVENO)
+    then
+        modify($rotu){Zh3 = true};
+end;
+
+rule "M2"
+    salience 8
+    when
+        $rotu: RotU()
+        $c: Country(stabloMisija == StabloMisija.GRUPNO)
+    then
+        modify($rotu){M2 = true};
+end;
+
+rule "M3"
+    salience 8
+    when
+        $rotu: RotU()
+        $c: Country(stabloMisija == StabloMisija.JEDINSTVENO)
+    then
+        modify($rotu){M3 = true};
+end;
+
+rule "stablo_misija1"
+    salience 7
+    when
+        $scoreList: List()
+        $rotu: RotU(Zh1 == true && M2 == true)
+    then
+        $scoreList.add(25);
+end;
+
+rule "stablo_misija2"
+    salience 7
+    when
+        $scoreList: List()
+        $rotu: RotU((Zh1 == true && M3 == true) || (Zh2 == true && M2 == true))
+    then
+        $scoreList.add(50);
+end;
+
+rule "stablo_misija3"
+    salience 7
+    when
+        $scoreList: List()
+        $rotu: RotU((Zh2 == true && M3 == true) || (Zh3 == true && M2 == true))
+    then
+        $scoreList.add(100);
+end;
+
+rule "stablo_misija4"
+    salience 7
+    when
+        $scoreList: List()
+        $rotu: RotU(Zh3 == true && M3 == true)
+    then
+        $scoreList.add(200);
+end;
+
+rule "accumulate"
     salience 5
     when
         $s: Score()
@@ -55,4 +334,145 @@ rule "sccumulate"
                    )
     then
         modify($s){setScore($score)}
+end;
+
+rule "osvajanje_bonusi"
+    salience 2
+    when
+        $s: Score()
+        $request: RequestDTO(stilIgre == StilIgre.OSVAJANJE)
+        $c: Country()
+    then
+        modify($s){setScore((int) ($s.score * Math.pow(1.3, $c.bonusi_vojni) * Math.pow(1.1, $c.bonusi_pomorski)))}
+end;
+
+rule "diplomatija_bonusi_d1"
+    salience 4
+    when
+        $r: RequestDTO(stilIgre == StilIgre.DIPLOMATIJA)
+        $rotu: RotU()
+    then
+        modify($rotu){d1 = true};
+end;
+
+rule "diplomatija_bonusi_d2"
+    salience 4
+    when
+        $c: Country(diplomatska_institucija == true)
+        $rotu: RotU()
+    then
+        modify($rotu){d2 = true};
+end;
+
+rule "diplomatija_bonusi_dm1"
+    salience 3
+    when
+        $rotu: RotU(d1 == true && d2 == true)
+    then
+        modify($rotu){dm1 = true};
+end;
+
+rule "diplomatija_bonusi_dm2"
+    salience 3
+    when
+        $rotu: RotU(d1 == true && d2 == false)
+    then
+        modify($rotu){dm2 = true};
+end;
+
+rule "diplomatija_bonusi_m1"
+    salience 3
+    when
+        $c: Country(stabloMisija == StabloMisija.NEBITNO)
+        $rotu: RotU()
+    then
+        modify($rotu){m1 = true};
+end;
+
+rule "diplomatija_bonusi_m2"
+    salience 3
+    when
+        $c: Country(stabloMisija == StabloMisija.GRUPNO)
+        $rotu: RotU()
+    then
+        modify($rotu){m2 = true};
+end;
+
+rule "diplomatija_bonusi_m3"
+    salience 3
+    when
+        $c: Country(stabloMisija == StabloMisija.JEDINSTVENO)
+        $rotu: RotU()
+    then
+        modify($rotu){m3 = true};
+end;
+
+rule "diplomatija_bonusi1"
+    salience 2
+    when
+        $s: Score()
+        $c: Country()
+        $rotu: RotU(dm2 == true && m1 == true)
+    then
+        modify($s){setScore((int) ($s.score * Math.pow(1.1, $c.bonusi_diplomatski)))}
+end;
+
+rule "diplomatija_bonusi2"
+    salience 2
+    when
+        $s: Score()
+        $c: Country()
+        $rotu: RotU((dm1 == true && m1 == true) || (dm2 == true && m2 == true))
+    then
+        modify($s){setScore((int) ($s.score * Math.pow(1.2, $c.bonusi_diplomatski)))}
+end;
+
+rule "diplomatija_bonusi3"
+    salience 2
+    when
+        $s: Score()
+        $c: Country()
+        $rotu: RotU((dm1 == true && m2 == true) || (dm2 == true && m3 == true))
+    then
+        modify($s){setScore((int) ($s.score * Math.pow(1.3, $c.bonusi_diplomatski)))}
+end;
+
+rule "diplomatija_bonusi4"
+    salience 2
+    when
+        $s: Score()
+        $c: Country()
+        $rotu: RotU(dm1 == true && m3 == true)
+    then
+        modify($s){setScore((int) ($s.score * Math.pow(1.5, $c.bonusi_diplomatski)))}
+end;
+
+rule "trgovina_bonusi"
+    salience 2
+    when
+        $s: Score()
+        $request: RequestDTO(stilIgre == StilIgre.TRGOVINA)
+        $c: Country()
+    then
+        modify($s){setScore((int) ($s.score * Math.pow(1.3, $c.bonusi_ekonomski) * Math.pow(1.1, $c.bonusi_pomorski)))}
+end;
+
+rule "kolonizacija_bonusi"
+    salience 2
+    when
+        $s: Score()
+        $request: RequestDTO(stilIgre == StilIgre.KOLONIZACIJA)
+        $c: Country()
+    then
+        modify($s){setScore((int) ($s.score * Math.pow(1.3, $c.bonusi_pomorski) * Math.pow(1.1, $c.bonusi_vojni)))}
+end;
+
+rule "dostignuca_bonusi"
+    salience 1
+    when
+        $s: Score()
+        $request: RequestDTO(dostignuca == Dostignuca.BITNO)
+        $c: Country()
+    then
+        modify($s){setScore((int) ($s.score * Math.pow(1.1, $c.dostignuca)))}
 end;

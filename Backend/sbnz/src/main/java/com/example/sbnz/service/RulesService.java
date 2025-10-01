@@ -72,6 +72,7 @@ public class RulesService
     {
         ResponseDTO response = new ResponseDTO();
         Score score = new Score();
+        RotU rotu = new RotU();
         List<Integer> scoreList = new ArrayList<Integer>();
 
         for(Country country: countries)
@@ -80,6 +81,7 @@ public class RulesService
 
             kieSession.insert(request);
             kieSession.insert(score);
+            kieSession.insert(rotu);
             kieSession.insert(scoreList);
             kieSession.insert(country);
             for(Region region: regions)
@@ -92,6 +94,7 @@ public class RulesService
 
             response.insert(country.ime, score.score);
             scoreList = new ArrayList<Integer>();
+            rotu = new RotU();
         }
 
         return response;
