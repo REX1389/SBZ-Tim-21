@@ -3,6 +3,7 @@
 import {RequestDTO} from './DTO/RequestDTO';
 import {ResponseDTO} from './DTO/ResponseDTO';
 import { useState } from 'react';
+import './homepage.css';
 
 export default function Homepage()
 {
@@ -94,7 +95,7 @@ export default function Homepage()
         <option>Subsaharska Afrika</option>
         <option>Novi Svet</option>
     </select><br/>
-    <button onClick={button_request}>Find best countries</button><br/>
+    <button onClick={button_request}>Nadji najbolje drzave</button><br/>
     <p>{responseDTO.name1} {responseDTO.score1}</p>
     <p>{responseDTO.name2} {responseDTO.score2}</p>
     <p>{responseDTO.name3} {responseDTO.score3}</p>

@@ -1,0 +1,30 @@
+div
+{
+    background-color: whitesmoke;
+    position: absolute;
+    top: 500px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    padding: 20px;
+}
+
+p
+{
+    text-align: center;
+}
+
+button
+{
+    width: 200px;
+    display: block;
+    margin: auto;
+    background-color: lightgray;
+}
+
+select
+{
+    width: 200px;
+    display: block;
+    margin: auto;
+}
