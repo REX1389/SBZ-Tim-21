@@ -1,0 +1,1 @@
+insert into regions (`IME`,`VREDNOST`,`KONTINENT`) values ('a',1,'AZIJA');

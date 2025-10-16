@@ -8,9 +8,13 @@ import com.example.sbnz.model.Country;
 import com.example.sbnz.model.Grana;
 import com.example.sbnz.model.Region;
 import com.example.sbnz.model.SnagaDrzave;
+import com.example.sbnz.repository.CountryRepository;
+import com.example.sbnz.repository.GranaRepository;
+import com.example.sbnz.repository.RegionRepository;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,15 +24,18 @@ import java.util.List;
 public class RulesService
 {
     private final KieContainer kieContainer;
-    private ArrayList<Region> regions;
-    private ArrayList<Grana> grane;
-    private ArrayList<Country> countries;
+    @Autowired
+    private RegionRepository regionRepository;
+    @Autowired
+    private GranaRepository granaRepository;
+    @Autowired
+    private CountryRepository countryRepository;
 
     public RulesService(KieContainer kieContainer)
     {
         this.kieContainer = kieContainer;
 
-        regions = new ArrayList<Region>();
+        /*regions = new ArrayList<Region>();
         regions.add(new Region("Balkan", 250, Kontinent.EVROPA_I_SREDOZEMLJE));
         regions.add(new Region("Francuska", 400, Kontinent.EVROPA_I_SREDOZEMLJE));
         regions.add(new Region("Pirinejsko poluostrvo", 350, Kontinent.EVROPA_I_SREDOZEMLJE));
@@ -41,9 +48,9 @@ public class RulesService
         regions.add(new Region("Sibir", 200, Kontinent.AZIJA));
         regions.add(new Region("Severna amerika", 350, Kontinent.NOVI_SVET));
         regions.add(new Region("Juzna amerika", 250, Kontinent.NOVI_SVET));
-        regions.add(new Region("Karibi", 150, Kontinent.NOVI_SVET));
+        regions.add(new Region("Karibi", 150, Kontinent.NOVI_SVET));*/
 
-        grane = new ArrayList<Grana>();
+        /*grane = new ArrayList<Grana>();
         grane.add(new Grana("Pirinejsko poluostrvo", "Francuska"));
         grane.add(new Grana("Italija", "Francuska"));
         grane.add(new Grana("Nemacka", "Francuska"));
@@ -58,18 +65,22 @@ public class RulesService
         grane.add(new Grana("Bliski Istok", "Balkan"));
         grane.add(new Grana("Indija", "Bliski Istok"));
         grane.add(new Grana("Kina", "Indija"));
-        grane.add(new Grana("Indokina", "Indija"));
+        grane.add(new Grana("Indokina", "Indija"));*/
 
-        countries = new ArrayList<Country>();
+        /*countries = new ArrayList<Country>();
         countries.add(new Country("Srbija", 3, 1, 2, 1, 3, false, StabloMisija.JEDINSTVENO, SnagaDrzave.SLABA, "Balkan"));
         countries.add(new Country("Kastilja", 3, 2, 2, 0, 4, false, StabloMisija.JEDINSTVENO, SnagaDrzave.JAKA, "Pirinejsko poluostrvo"));
         countries.add(new Country("Austrija", 2, 0, 2, 3, 2, true, StabloMisija.JEDINSTVENO, SnagaDrzave.OSREDNJA, "Nemacka"));
         countries.add(new Country("Djenova", 2, 2, 3, 0, 1, false, StabloMisija.GRUPNO, SnagaDrzave.SLABA, "Italija"));
-        countries.add(new Country("Ming", 1, 1, 3, 2, 2, true, StabloMisija.JEDINSTVENO, SnagaDrzave.JAKA, "Kina"));
+        countries.add(new Country("Ming", 1, 1, 3, 2, 2, true, StabloMisija.JEDINSTVENO, SnagaDrzave.JAKA, "Kina"));*/
     }
 
     public ResponseDTO applyRules(RequestDTO request)
     {
+        List<Region> regions = regionRepository.findAll();
+        List<Grana> grane = granaRepository.findAll();
+        List<Country> countries = countryRepository.findAll();
+
         ResponseDTO response = new ResponseDTO();
         Score score = new Score();
         RotU rotu = new RotU();

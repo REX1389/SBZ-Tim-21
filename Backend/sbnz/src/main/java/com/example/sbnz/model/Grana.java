@@ -6,13 +6,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.kie.api.definition.type.Position;
 
-//@Table(name="grane")
-//@Entity
+@Table(name="grane")
+@Entity
 public class Grana
 {
-    //@Id
-    //@Column(nullable = false, updatable = false, unique = true)
-    //public int id;
+    @Id
+    @Column(nullable = false, updatable = false, unique = true)
+    public Long id;
     @Position(0)
     public String regionOd;
 

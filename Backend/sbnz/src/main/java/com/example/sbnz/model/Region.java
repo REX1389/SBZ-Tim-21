@@ -1,10 +1,7 @@
 package com.example.sbnz.model;
 
 import com.example.sbnz.DTO.Kontinent;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Table(name="regions")
 @Entity
@@ -14,6 +11,7 @@ public class Region
     @Column(nullable = false, updatable = false, unique = true)
     public String ime;
     public int vrednost;
+    @Enumerated(EnumType.STRING)
     public Kontinent kontinent;
 
     public Region()

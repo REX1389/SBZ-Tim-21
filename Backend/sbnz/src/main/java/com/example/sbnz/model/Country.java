@@ -1,10 +1,7 @@
 package com.example.sbnz.model;
 
 import com.example.sbnz.DTO.StabloMisija;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Table(name="countires")
 @Entity
@@ -19,7 +16,9 @@ public class Country
     public int bonusi_diplomatski;
     public int dostignuca;
     public boolean diplomatska_institucija;
+    @Enumerated(EnumType.STRING)
     public StabloMisija stabloMisija;
+    @Enumerated(EnumType.STRING)
     public SnagaDrzave snagaDrzave;
     public String regionIme;
 
